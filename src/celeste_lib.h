@@ -6,6 +6,15 @@
 // Defines
 // ###################################################################
 
+#ifdef _WIN32
+#define DEBUG_BREAL() __debugbreak()
+#elif __linux__
+#define DEBUG_BREAL() __builtin_debugtrap()
+#elif __APPLE__
+#define DEBUG_BREAL() __builtin_trap()
+#endif
+
+
 // ###################################################################
 // Logging
 // ###################################################################
@@ -32,9 +41,9 @@ enum TextColor
 };
 
 template <typename ...Args>
-void _log(char* prefix, char* msg, TextColor textColor, Args... args)
+void _log(const char* prefix, const char* msg, TextColor textColor, Args... args)
 {
-    static char* TextColorTable[TEXT_COLOR_COUNT] = 
+    static const char* TextColorTable[TEXT_COLOR_COUNT] = 
     {
         "\x1b[30m", // TEXT_COLOR_BLACK
         "\x1b[31m", // TEXT_COLOR_RED
@@ -66,3 +75,12 @@ void _log(char* prefix, char* msg, TextColor textColor, Args... args)
 #define SM_TRACE(msg, ...) _log("TRACE: ", msg, TEXT_COLOR_GREEN, ##__VA_ARGS__)
 #define SM_WARN(msg, ...) _log("WARN: ", msg, TEXT_COLOR_YELLOW, ##__VA_ARGS__)
 #define SM_ERROR(msg, ...) _log("ERROR: ", msg, TEXT_COLOR_RED, ##__VA_ARGS__)
+
+#define SM_ASSERT(x, msg, ...)              \
+{                                           \
+    if (!(x))                               \
+    {                                       \
+        SM_ERROR(msg, ##__VA_ARGS__);       \
+        DEBUG_BREAL();                      \
+    }                                       \
+}

@@ -120,10 +120,12 @@ int main()
     {
         //update
         platform_update_window();
+        
+        SM_TRACE("Test");
+        SM_WARN("Test");
+        SM_ERROR("Test");
 
-        SM_TRACE("test");
-        SM_WARN("test");
-        SM_ERROR("test");
+        SM_ASSERT(false, "Assertion.");
     } 
 
     return 0; 
